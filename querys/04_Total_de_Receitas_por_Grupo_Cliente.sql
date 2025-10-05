@@ -1,0 +1,16 @@
+-- Separe os clientes em 5 grupos de acordo com o valor pago por cliente
+CREATE VIEW view_total_receitas_por_grupo_cliente AS
+SELECT 
+	customers.company_name, 
+	SUM(order_details.unit_price * order_details.quantity * (1.0 - order_details.discount)) AS Total,
+	NTILE(5) OVER (ORDER BY SUM(order_details.unit_price * order_details.quantity * (1.0 - order_details.discount)) DESC) AS numero_
+FROM 
+    customers
+INNER JOIN 
+    orders ON customers.customer_id = orders.customer_id
+INNER JOIN 
+    order_details ON order_details.order_id = orders.order_id
+GROUP BY 
+    customers.company_name
+ORDER BY 
+    Total DESC;
